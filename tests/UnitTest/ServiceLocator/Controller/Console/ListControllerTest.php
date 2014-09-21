@@ -1,5 +1,5 @@
 <?php
-namespace Modules\UnitTest\ServiceLocator\Controller\User;
+namespace Modules\UnitTest\ServiceLocator\Controller\Console;
 
 use Modules\Module;
 use Zend\ServiceManager\ServiceManager;
@@ -9,7 +9,7 @@ use Zend\Mvc\Controller\PluginManager as ControllerPluginManager;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\SharedEventManager;
 
-class ListTest extends \PHPUnit_Framework_TestCase
+class ListControllerTest extends \PHPUnit_Framework_TestCase
 {
     private $serviceManager;
     private $serviceManagerConfig;
@@ -41,11 +41,18 @@ class ListTest extends \PHPUnit_Framework_TestCase
 
     public function testCreation()
     {
+        $moduleManagerMock = $this->getMockBuilder('\Zend\ModuleManager\ModuleManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->serviceManager->setService('ModuleManager', $moduleManagerMock);
+
         $this->assertTrue($this->controllerManager->has('Modules\Controller\Console\List'));
 
         $controller = $this->controllerManager->get('Modules\Controller\Console\List');
 
         $this->assertInstanceOf('Modules\Controller\Console\ListController', $controller);
+        $this->assertAttributeSame($moduleManagerMock, 'moduleManager', $controller);
     }
 
 }

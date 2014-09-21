@@ -6,6 +6,7 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\ModuleManager\Feature\ControllerProviderInterface;
 use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Zend\Mvc\Controller\ControllerManager;
 use Zend\Console\Adapter\AdapterInterface as ConsoleAdapterInterface;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ControllerProviderInterface,
@@ -46,8 +47,14 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
     public function getControllerConfig()
     {
         return array(
-            'invokables' => array(
-                'Modules\Controller\Console\List' => 'Modules\Controller\Console\ListController',
+            'factories' => array(
+                'Modules\Controller\Console\List' => function (ControllerManager $cm) {
+                    $sl = $cm->getServiceLocator();
+
+                    return new Controller\Console\ListController(
+                        $sl->get('ModuleManager')
+                    );
+                },
             )
         );
     }
