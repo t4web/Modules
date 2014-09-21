@@ -8,4 +8,20 @@ return array(
         ),
     ),
 
+    'console' => array(
+        'router' => array(
+            'routes' => array(
+                'modules-list' => array(
+                    'options' => array(
+                        'route'    => 'modules list',
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'Modules\Controller\Console',
+                            'controller' => 'List',
+                            'action'     => 'show'
+                        )
+                    )
+                )
+            )
+        )
+    ),
 );
