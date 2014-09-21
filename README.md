@@ -58,6 +58,7 @@ Installation
         // ...
     );
     ```
+
 Testing
 ------------
 Unit test runnig from authentication module directory.
