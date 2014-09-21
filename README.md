@@ -46,7 +46,7 @@ Installation
 
 #### Post installation
 
-1. Enabling it in your `application.config.php`file.
+Enabling it in your `application.config.php`file.
 
     ```php
     <?php
@@ -66,10 +66,12 @@ Unit test runnig from authentication module directory.
     $ cd vendor/t4web/modules/tests
     $ phupnit
     ```
+
 For running only Functional tests you need run phpunit, like this:
     ```bash
     $ phupnit --filter Functional
     ```
+
 For running only Unit tests you need run phpunit, like this:
     ```bash
     $ phupnit --filter Unit
