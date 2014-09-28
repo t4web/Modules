@@ -21,6 +21,6 @@ class ListController extends AbstractActionController {
 
 
 
-        return array("hi");
+        return;
     }
 }

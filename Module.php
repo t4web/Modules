@@ -16,6 +16,7 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
     public function getConsoleUsage(ConsoleAdapterInterface $console)
     {
         return array(
+            'modules init' => 'Initialize modules migrations',
             'modules list' => 'List available modules',
         );
     }
@@ -53,6 +54,13 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
 
                     return new Controller\Console\ListController(
                         $sl->get('ModuleManager')
+                    );
+                },
+                'Modules\Controller\Console\Init' => function (ControllerManager $cm) {
+                    $sl = $cm->getServiceLocator();
+
+                    return new Controller\Console\InitController(
+                        $sl->get('Zend\Db\Adapter\Adapter')
                     );
                 },
             )

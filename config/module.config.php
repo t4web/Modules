@@ -11,6 +11,16 @@ return array(
     'console' => array(
         'router' => array(
             'routes' => array(
+                'modules-init' => array(
+                    'options' => array(
+                        'route'    => 'modules init',
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'Modules\Controller\Console',
+                            'controller' => 'Init',
+                            'action'     => 'run'
+                        )
+                    )
+                ),
                 'modules-list' => array(
                     'options' => array(
                         'route'    => 'modules list',
