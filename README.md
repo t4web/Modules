@@ -13,12 +13,12 @@ Requirements
 
 Features / Goals
 ----------------
-* List used modules in admin (backend) zone [IN PROGRESS]
 * List used modules in console [IN PROGRESS]
-* Install new modules (if it have initial migrations) in admin (backend) zone [IN PROGRESS]
 * Install new modules (if it have initial migrations) in console [IN PROGRESS]
-* Upgrade modules (if it have migrations) in admin (backend) zone [IN PROGRESS]
 * Upgrade modules (if it have migrations) in console [IN PROGRESS]
+* List used modules in admin (backend) zone [IN PROGRESS]
+* Install new modules (if it have initial migrations) in admin (backend) zone [IN PROGRESS]
+* Upgrade modules (if it have migrations) in admin (backend) zone [IN PROGRESS]
 
 Installation
 ------------
