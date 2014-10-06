@@ -6,5 +6,8 @@ namespace modules\Codeception\Module;
 
 class FunctionalHelper extends \Codeception\Module
 {
-
+    public function getApplication()
+    {
+        return $this->getModule('ZF2')->application;
+    }
 }

@@ -8,6 +8,7 @@ use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Zend\Mvc\Controller\ControllerManager;
 use Zend\Console\Adapter\AdapterInterface as ConsoleAdapterInterface;
+use League\CLImate\CLImate;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ControllerProviderInterface,
                         ServiceProviderInterface, ConsoleUsageProviderInterface
@@ -53,7 +54,8 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                     $sl = $cm->getServiceLocator();
 
                     return new Controller\Console\ListController(
-                        $sl->get('ModuleManager')
+                        $sl->get('ModuleManager'),
+                        new CLImate()
                     );
                 },
                 'Modules\Controller\Console\Init' => function (ControllerManager $cm) {

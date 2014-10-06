@@ -4,7 +4,7 @@
 // You should not change it manually as it will be overwritten on next build
 // @codingStandardsIgnoreFile
 
-namespace modules;
+namespace Modules;
 use Codeception\Module\Asserts;
 use modules\Codeception\Module\UnitHelper;
 

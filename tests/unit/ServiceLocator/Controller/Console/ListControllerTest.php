@@ -53,6 +53,7 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Modules\Controller\Console\ListController', $controller);
         $this->assertAttributeSame($moduleManagerMock, 'moduleManager', $controller);
+        $this->assertAttributeInstanceOf('\League\CLImate\CLImate', 'cli', $controller);
     }
 
 }
