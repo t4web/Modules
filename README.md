@@ -10,10 +10,11 @@ Each module must contain own migrations, version and settings.
 Requirements
 ------------
 * [Zend Framework 2](https://github.com/zendframework/zf2) (latest master)
+* [CLImate](https://github.com/thephpleague/climate)
 
 Features / Goals
 ----------------
-* List used modules in console [IN PROGRESS]
+* List used modules/libraries/dependencies in console [DONE]
 * Install new modules (if it have initial migrations) in console [IN PROGRESS]
 * Upgrade modules (if it have migrations) in console [IN PROGRESS]
 * List used modules in admin (backend) zone [IN PROGRESS]
@@ -58,6 +59,14 @@ return array(
     // ...
 );
 ```
+
+Usage
+------------
+```bash
+$ php public/index.php modules list
+```
+result will be like this:
+<p align="center"><img src="http://t4web.com.ua/var/module-list-example.png" width="844" alt="module list example" /></p>
 
 Testing
 ------------
