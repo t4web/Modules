@@ -35,7 +35,7 @@ Installation
 
     ```json
     "require": {
-        "t4web/modules": "dev-master"
+        "t4web/modules": "0.2.*"
     }
     ```
 
