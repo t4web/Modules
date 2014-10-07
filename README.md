@@ -62,6 +62,29 @@ return array(
 
 Usage
 ------------
+For manage modules migrations each module must have config/migrations.config.php
+```php
+return array(
+    'unknown' => 'Authentication\Migrations\Install',
+    '0.2.1' => 'Authentication\Migrations\Upgrade_0_2_1',
+    '0.2.2' => 'Authentication\Migrations\Upgrade_0_2_2',
+    '1.0.0' => 'Authentication\Migrations\Upgrade_1_0_0',
+);
+```
+'unknown' - runs for modules, wich have initial migrations, value - migration class. '0.2.1', '1.0.0' - version number for start upgrades (run migrations), value - migration class
+
+When perform migration version will execute consecutively.
+
+Example 1: Your module version is '0.2.1', new version is '1.0.1' when you perform
+migrations, will be runs '0.2.1', '0.2.2', '1.0.0'.
+
+Example 2: Your module version is '0.2.2', new version is '1.0.1' when you perform
+migrations, will be runs '0.2.2', '1.0.0'.
+
+Example 3: Your module version is '0.2.13', new version is '1.0.1' when you perform
+migrations, will be runs '1.0.0'.
+
+For list modules run
 ```bash
 $ php public/index.php modules list
 ```
