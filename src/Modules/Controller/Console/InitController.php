@@ -30,7 +30,7 @@ class InitController extends AbstractActionController {
 
         $this->dbAdapter->query(
             "INSERT INTO `t4_modules` (`name`, `version`)
-            VALUES  ('t4web/modules', '0.9.1');",
+             VALUES ('Modules', '0.2.1');",
             Adapter::QUERY_MODE_EXECUTE
         );
 
