@@ -60,6 +60,11 @@ return array(
 );
 ```
 
+#### Initialize
+```bash
+$ php public/index.php modules init
+```
+
 Usage
 ------------
 For manage modules migrations each module must have config/migrations.config.php
