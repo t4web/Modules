@@ -18,7 +18,7 @@
         "php": ">=5.3.3",
         "zendframework/zendframework": "2.3.*",
         "league/climate": "~2.0",
-        "t4web/composer-lock-parser": "0.1.*"
+        "t4web/composer-lock-parser": "1.0.*"
     },
     "require-dev" : {
         "codeception/codeception": "2.*",
