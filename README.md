@@ -11,6 +11,7 @@ Requirements
 ------------
 * [Zend Framework 2](https://github.com/zendframework/zf2) (latest master)
 * [CLImate](https://github.com/thephpleague/climate)
+* [Composer lock parser](https://github.com/t4web/ComposerLockParser)
 
 Features / Goals
 ----------------
