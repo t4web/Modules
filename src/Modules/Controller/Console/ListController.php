@@ -7,8 +7,12 @@ use Zend\ModuleManager\ModuleManagerInterface;
 use League\CLImate\CLImate;
 use Zend\Json\Json;
 use Zend\Loader\AutoloaderFactory;
+use ComposerLockParser\ComposerInfo;
+use ComposerLockParser\Package;
+use Zend\View\Model\ViewModel;
 
-class ListController extends AbstractActionController {
+class ListController extends AbstractActionController
+{
 
     /**
      * @var ModuleManagerInterface
@@ -20,20 +24,24 @@ class ListController extends AbstractActionController {
      */
     private $cli;
 
-    public function __construct(ModuleManagerInterface $moduleManager, CLImate $cli){
+    /**
+     * @var ComposerInfo
+     */
+    private $composerInfo;
+
+    public function __construct(
+        ModuleManagerInterface $moduleManager,
+        CLImate $cli,
+        ComposerInfo $composerInfo)
+    {
         $this->moduleManager = $moduleManager;
         $this->cli = $cli;
+        $this->composerInfo = $composerInfo;
     }
-    
-    public function showAction() {
 
-        if (!file_exists('composer.lock')) {
-            return "You not use Composer? File composer.lock in your project folder not found.";
-        }
-
-        $composerLockFile = file_get_contents('composer.lock');
-
-        $packagesInfo = Json::decode($composerLockFile, Json::TYPE_ARRAY);
+    public function showAction()
+    {
+        $this->composerInfo->parse();
 
         $this->cli->bold('Used packages:');
 
@@ -46,21 +54,23 @@ class ListController extends AbstractActionController {
         );
 
         $packages = [];
-        foreach ($packagesInfo['packages'] as $package) {
-            $namespace = $this->getNamespace($package);
+        /** @var Package $package */
+        foreach ($this->composerInfo->getPackages() as $package) {
+
+            $namespace = $package->getNamespace();
 
             $this->cli->out(
                 '  '
-                . sprintf("%-16s", $package['version'])
+                . sprintf("%-16s", $package->getVersion())
                 . sprintf("%-20s", $namespace)
                 . "<green>"
-                . sprintf("%-40s", $package['name'])
+                . sprintf("%-40s", $package->getName())
                 . "</green>"
             );
 
             $packages[$namespace] = array(
-                'name' => $package['name'],
-                'version' => $package['version'],
+                'name'    => $package->getName(),
+                'version' => $package->getVersion(),
             );
         }
 
@@ -77,7 +87,7 @@ class ListController extends AbstractActionController {
 
         $namespaces = $this->collectNamespaces($loadedModules);
 
-        foreach ($namespaces as $moduleName=>$path) {
+        foreach ($namespaces as $moduleName => $path) {
 
             $version = 'unknown';
             if (isset($packages[$moduleName])) {
