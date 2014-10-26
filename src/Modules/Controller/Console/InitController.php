@@ -18,6 +18,25 @@ class InitController extends AbstractActionController {
 
     public function runAction() {
 
+        $databaseName = $this->getDatabaseName();
+
+        if (empty($databaseName)) {
+            return "Db access not configured" . PHP_EOL;
+        }
+
+        $result = $this->dbAdapter->query(
+            "SELECT *
+            FROM information_schema.tables
+            WHERE table_schema = '$databaseName'
+                AND table_name = 't4_modules'
+            LIMIT 1;",
+            Adapter::QUERY_MODE_EXECUTE
+        );
+
+        if ($result->count() > 0) {
+            return "Already initialized" . PHP_EOL;
+        }
+
         $this->dbAdapter->query(
             "CREATE TABLE IF NOT EXISTS `t4_modules` (
               `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
@@ -35,5 +54,18 @@ class InitController extends AbstractActionController {
         );
 
         return "Success completed" . PHP_EOL;
+    }
+
+    private function getDatabaseName()
+    {
+        $metadata = new \Zend\Db\Metadata\Metadata($this->dbAdapter);
+
+        $shemas = $metadata->getSchemas();
+
+        if (!array_key_exists(0, $shemas)) {
+            return;
+        }
+
+        return $shemas[0];
     }
 }
