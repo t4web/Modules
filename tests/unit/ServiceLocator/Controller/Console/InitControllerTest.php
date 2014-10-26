@@ -45,7 +45,12 @@ class InitControllerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $dbMetadata = $this->getMockBuilder('Zend\Db\Metadata\Metadata')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->serviceManager->setService('Zend\Db\Adapter\Adapter', $dbAdapterMock);
+        $this->serviceManager->setService('Zend\Db\Metadata\Metadata', $dbMetadata);
 
         $this->assertTrue($this->controllerManager->has('Modules\Controller\Console\Init'));
 

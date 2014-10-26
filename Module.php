@@ -8,6 +8,8 @@ use Zend\ModuleManager\Feature\ServiceProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
 use Zend\Mvc\Controller\ControllerManager;
 use Zend\Console\Adapter\AdapterInterface as ConsoleAdapterInterface;
+use Zend\Db\Metadata\Metadata;
+use Zend\ServiceManager\ServiceManager;
 use League\CLImate\CLImate;
 use ComposerLockParser\ComposerInfo;
 
@@ -44,7 +46,13 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
 
     public function getServiceConfig()
     {
-        return array();
+        return array(
+            'factories' => array(
+                'Zend\Db\Metadata\Metadata' => function (ServiceManager $sl) {
+                    return new Metadata($sl->get('Zend\Db\Adapter\Adapter'));
+                }
+            )
+        );
     }
 
     public function getControllerConfig()
@@ -66,7 +74,8 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                     $sl = $cm->getServiceLocator();
 
                     return new Controller\Console\InitController(
-                        $sl->get('Zend\Db\Adapter\Adapter')
+                        $sl->get('Zend\Db\Adapter\Adapter'),
+                        $sl->get('Zend\Db\Metadata\Metadata')
                     );
                 },
             )

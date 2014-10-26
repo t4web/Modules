@@ -4,6 +4,7 @@ namespace Modules\Controller\Console;
 
 use Zend\Mvc\Controller\AbstractActionController;
 use Zend\Db\Adapter\Adapter;
+use Zend\Db\Metadata\Metadata;
 
 class InitController extends AbstractActionController {
 
@@ -12,8 +13,14 @@ class InitController extends AbstractActionController {
      */
     private $dbAdapter;
 
-    public function __construct(Adapter $dbAdapter){
+    /**
+     * @var Metadata
+     */
+    private $metadata;
+
+    public function __construct(Adapter $dbAdapter, Metadata $metadata){
         $this->dbAdapter = $dbAdapter;
+        $this->metadata = $metadata;
     }
 
     public function runAction() {
@@ -58,9 +65,7 @@ class InitController extends AbstractActionController {
 
     private function getDatabaseName()
     {
-        $metadata = new \Zend\Db\Metadata\Metadata($this->dbAdapter);
-
-        $shemas = $metadata->getSchemas();
+        $shemas = $this->metadata->getSchemas();
 
         if (!array_key_exists(0, $shemas)) {
             return;
