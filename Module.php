@@ -10,8 +10,9 @@ use Zend\Mvc\Controller\ControllerManager;
 use Zend\Console\Adapter\AdapterInterface as ConsoleAdapterInterface;
 use Zend\Db\Metadata\Metadata;
 use Zend\ServiceManager\ServiceManager;
-use League\CLImate\CLImate;
 use ComposerLockParser\ComposerInfo;
+use Zend\View\Renderer\PhpRenderer;
+use Modules\ViewModel\Console\ListViewModel;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ControllerProviderInterface,
                         ServiceProviderInterface, ConsoleUsageProviderInterface
@@ -62,12 +63,14 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                 'Modules\Controller\Console\List' => function (ControllerManager $cm) {
                     $sl = $cm->getServiceLocator();
 
-                    $composerInfo = new ComposerInfo('composer.lock');
+                    $renderer = new PhpRenderer();
+                    $renderer->resolver()->setPaths([__DIR__ . '/view']);
 
                     return new Controller\Console\ListController(
                         $sl->get('ModuleManager'),
-                        new CLImate(),
-                        $composerInfo
+                        new ComposerInfo('composer.lock'),
+                        new ListViewModel(),
+                        $renderer
                     );
                 },
                 'Modules\Controller\Console\Init' => function (ControllerManager $cm) {

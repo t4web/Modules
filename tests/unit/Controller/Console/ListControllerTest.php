@@ -12,10 +12,9 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
     private $controller;
 
     private $moduleManagerMock;
-
-    private $cliMateMock;
-
     private $composerInfo;
+    private $viewModelMock;
+    private $rendererMock;
 
     protected function setUp()
     {
@@ -23,15 +22,19 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->cliMateMock = $this->getMock('\League\CLImate\CLImate');
         $this->composerInfo = $this->getMockBuilder('\ComposerLockParser\ComposerInfo')
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->viewModelMock = $this->getMock('\Modules\ViewModel\Console\ListViewModel');
+
+        $this->rendererMock = $this->getMock('\Zend\View\Renderer\PhpRenderer');
+
         $this->controller = new ListController(
             $this->moduleManagerMock,
-            $this->cliMateMock,
-            $this->composerInfo
+            $this->composerInfo,
+            $this->viewModelMock,
+            $this->rendererMock
         );
     }
 
@@ -43,13 +46,6 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
         $this->composerInfo->expects($this->once())
             ->method('getPackages')
             ->will($this->returnValue(new PackagesCollection()));
-
-        $this->cliMateMock->expects($this->any())
-            ->method('black');
-
-        $this->cliMateMock->expects($this->any())
-            ->method('backgroundLightCyan')
-            ->will($this->returnSelf());
 
         $this->moduleManagerMock->expects($this->once())
             ->method('getLoadedModules')

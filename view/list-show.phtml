@@ -1,0 +1,77 @@
+<?php $cli = new League\CLImate\CLImate();
+/** @var Modules\ViewModel\Console\ListViewModel $viewModel */
+$viewModel = $this->viewModel()->getCurrent();
+
+$cli->bold('Used packages:');
+$cli->backgroundLightCyan(
+    '  <black>'
+    . sprintf("%-16s", 'Version')
+    . sprintf("%-20s", 'Namespace')
+    . sprintf("%-40s", 'Name')
+    . "</black>"
+);
+
+foreach($viewModel->getPackages() as $package) {
+    $cli->out(
+        '  '
+        . sprintf("%-16s", $package->getVersion())
+        . sprintf("%-20s", $package->getNamespace())
+        . "<green>"
+        . sprintf("%-40s", $package->getName())
+        . "</green>"
+    );
+}
+
+$cli->br();
+$cli->bold('Used modules:');
+$cli->backgroundLightCyan(
+    '  <black>'
+    . sprintf("%-16s", 'Version')
+    . sprintf("%-14s", 'Status')
+    . sprintf("%-40s", 'Name')
+    . "</black>"
+);
+
+foreach ($viewModel->getLoadedModules() as $moduleName => $path) {
+
+    $version = 'unknown';
+    if (isset($packages[$moduleName])) {
+        $version = $packages[$moduleName]['version'];
+    }
+
+    $cli->out(
+        '  '
+        . sprintf("%-16s", $version)
+        . sprintf("%-14s", 'need install')
+        . "<green>"
+        . sprintf("%-40s", $moduleName)
+        . "</green>"
+    );
+
+}
+
+$cli->br();
+$cli->out('Statuses may be one of [<yellow>active</yellow>, <yellow>need install</yellow>, <yellow>need upgrade</yellow>, <yellow>absent</yellow>]');
+$cli->br();
+$cli->bold('Actions');
+$cli->out(
+    '  '
+    . "<green>"
+    . sprintf("%-40s", 'index.php modules install MODULENAME')
+    . "</green>"
+    . sprintf("%-40s", 'Install module in system and run initial migrations')
+);
+$cli->out(
+    '  '
+    . "<green>"
+    . sprintf("%-40s", 'index.php modules upgrade MODULENAME')
+    . "</green>"
+    . sprintf("%-40s", 'Upgrade module and run module migrations')
+);
+$cli->out(
+    '  '
+    . "<green>"
+    . sprintf("%-40s", 'index.php modules remove MODULENAME')
+    . "</green>"
+    . sprintf("%-40s", 'Remove module and run remove migrations')
+);

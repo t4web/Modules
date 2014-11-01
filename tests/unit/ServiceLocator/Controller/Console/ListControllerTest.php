@@ -53,7 +53,9 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Modules\Controller\Console\ListController', $controller);
         $this->assertAttributeSame($moduleManagerMock, 'moduleManager', $controller);
-        $this->assertAttributeInstanceOf('\League\CLImate\CLImate', 'cli', $controller);
+        $this->assertAttributeInstanceOf('\ComposerLockParser\ComposerInfo', 'composerInfo', $controller);
+        $this->assertAttributeInstanceOf('\Zend\View\Renderer\PhpRenderer', 'renderer', $controller);
+        $this->assertAttributeInstanceOf('\Modules\ViewModel\Console\ListViewModel', 'viewModel', $controller);
     }
 
 }
