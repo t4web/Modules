@@ -11,6 +11,8 @@ $cli->backgroundLightCyan(
     . "</black>"
 );
 
+$packages = [];
+
 foreach($viewModel->getPackages() as $package) {
     $cli->out(
         '  '
@@ -19,6 +21,11 @@ foreach($viewModel->getPackages() as $package) {
         . "<green>"
         . sprintf("%-40s", $package->getName())
         . "</green>"
+    );
+
+    $packages[$package->getNamespace()] = array(
+        'name'    => $package->getName(),
+        'version' => $package->getVersion(),
     );
 }
 
