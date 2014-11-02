@@ -95,7 +95,7 @@ For list modules run
 $ php public/index.php modules list
 ```
 result will be like this:
-<p align="center"><img src="http://t4web.com.ua/var/module-list-example.png" width="844" alt="module list example" /></p>
+<p align="center"><img src="http://t4web.com.ua/var/module-list-example-0.2.3.png" width="844" alt="module list example" /></p>
 
 Testing
 ------------
