@@ -99,21 +99,19 @@ result will be like this:
 
 Testing
 ------------
-Unit test runnig from authentication module directory.
+For running tests you need install and intialize codeception, after this create/update codeception.yml in you project root and add Modules tests, like this:
+```yml
+include:
+    - vendor/t4web/modules  # <- add modules tests to include
 
-```bash
-$ cd vendor/t4web/modules/tests
-$ phpunit
+paths:
+    log: tests/_output
+
+settings:
+    colors: true
+    memory_limit: 1024M
 ```
-
-For running only Functional tests you need run phpunit, like this:
-
+After this you may run functional tests from your project root
 ```bash
-$ phpunit --filter Functional
-```
-
-For running only Unit tests you need run phpunit, like this:
-
-```bash
-$ phpunit --filter Unit
+$ codeception run
 ```
