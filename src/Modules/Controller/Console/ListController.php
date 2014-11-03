@@ -6,7 +6,6 @@ use Zend\Mvc\Controller\AbstractActionController;
 use Zend\ModuleManager\ModuleManagerInterface;
 use Zend\View\Renderer\PhpRenderer;
 use ComposerLockParser\ComposerInfo;
-use ComposerLockParser\Package;
 use Modules\ViewModel\Console\ListViewModel;
 
 class ListController extends AbstractActionController

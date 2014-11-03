@@ -30,6 +30,16 @@ return array(
                             'action'     => 'show'
                         )
                     )
+                ),
+                'modules-install' => array(
+                    'options' => array(
+                        'route'    => 'modules install <moduleName>',
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'Modules\Controller\Console',
+                            'controller' => 'Install',
+                            'action'     => 'run'
+                        )
+                    )
                 )
             )
         )

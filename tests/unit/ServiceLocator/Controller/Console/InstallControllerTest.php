@@ -9,7 +9,7 @@ use Zend\Mvc\Controller\PluginManager as ControllerPluginManager;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\SharedEventManager;
 
-class InitControllerTest extends \PHPUnit_Framework_TestCase
+class InstallControllerTest extends \PHPUnit_Framework_TestCase
 {
     private $serviceManager;
 
@@ -40,23 +40,19 @@ class InitControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testCreation()
     {
-        $dbAdapterMock = $this->getMockBuilder('Zend\Db\Adapter\Adapter')
+        $moduleServiceMock = $this->getMockBuilder('Modules\Module\Service')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $dbMetadata = $this->getMockBuilder('Zend\Db\Metadata\Metadata')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->serviceManager->setService('Modules\Module\Service', $moduleServiceMock);
 
-        $this->serviceManager->setService('Zend\Db\Adapter\Adapter', $dbAdapterMock);
-        $this->serviceManager->setService('Zend\Db\Metadata\Metadata', $dbMetadata);
+        $this->assertTrue($this->controllerManager->has('Modules\Controller\Console\Install'));
 
-        $this->assertTrue($this->controllerManager->has('Modules\Controller\Console\Init'));
+        $controller = $this->controllerManager->get('Modules\Controller\Console\Install');
 
-        $controller = $this->controllerManager->get('Modules\Controller\Console\Init');
-
-        $this->assertInstanceOf('Modules\Controller\Console\InitController', $controller);
-        $this->assertAttributeSame($dbAdapterMock, 'dbAdapter', $controller);
+        $this->assertInstanceOf('Modules\Controller\Console\InstallController', $controller);
+        $this->assertAttributeSame($moduleServiceMock, 'moduleService', $controller);
+        $this->assertAttributeInstanceOf('ComposerLockParser\ComposerInfo', 'composerInfo', $controller);
     }
 
 }

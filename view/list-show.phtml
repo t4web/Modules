@@ -44,6 +44,7 @@ foreach ($viewModel->getLoadedModules() as $moduleName => $path) {
     $version = 'unknown';
     if (isset($packages[$moduleName])) {
         $version = $packages[$moduleName]['version'];
+        $moduleName = $packages[$moduleName]['name'];
     }
 
     $cli->out(
