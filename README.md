@@ -16,7 +16,7 @@ Requirements
 Features / Goals
 ----------------
 * List used modules/libraries/dependencies in console [DONE]
-* Install new modules (if it have initial migrations) in console [IN PROGRESS]
+* Install new modules (and run migrations if it have) in console [DONE]
 * Upgrade modules (if it have migrations) in console [IN PROGRESS]
 * List used modules in admin (backend) zone [IN PROGRESS]
 * Install new modules (if it have initial migrations) in admin (backend) zone [IN PROGRESS]
