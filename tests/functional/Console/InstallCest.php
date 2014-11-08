@@ -31,7 +31,8 @@ class InstallCest
 
         $this->controller = new InstallController(
             $application->getServiceManager()->get('Modules\Module\Service'),
-            new ComposerInfo('composer.lock')
+            new ComposerInfo('composer.lock'),
+            $application->getServiceManager()->get('Modules\Migration\Service')
         );
 
         $this->controller->setEvent($this->event);
@@ -76,7 +77,8 @@ class InstallCest
         $application = $I->getApplication();
         $this->controller = new InstallController(
             $application->getServiceManager()->get('Modules\Module\Service'),
-            $composerInfoMock
+            $composerInfoMock,
+            Stub::make('Modules\Migration\Service', ['run' => true])
         );
 
         $this->controller->setEvent($this->event);
@@ -122,7 +124,8 @@ class InstallCest
         $application = $I->getApplication();
         $this->controller = new InstallController(
             $application->getServiceManager()->get('Modules\Module\Service'),
-            $composerInfoMock
+            $composerInfoMock,
+            Stub::make('Modules\Migration\Service', ['run' => true])
         );
 
         $this->controller->setEvent($this->event);
@@ -188,4 +191,5 @@ class InstallCest
             ]
         );
     }
+
 }

@@ -2,7 +2,6 @@
 namespace Modules\UnitTest\Module;
 
 use Modules\Module\Service;
-use Modules\Module\Module;
 use Codeception\Util\Stub;
 
 class ServiceTest extends \PHPUnit_Framework_TestCase
@@ -41,5 +40,4 @@ class ServiceTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('0.33.44', $module->getVersion());
         $this->assertTrue($module->isNeedInstallation());
     }
-
 }

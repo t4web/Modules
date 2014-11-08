@@ -14,9 +14,12 @@ use Zend\ServiceManager\ServiceManager;
 use ComposerLockParser\ComposerInfo;
 use Zend\View\Renderer\PhpRenderer;
 use Modules\ViewModel\Console\ListViewModel;
-use Modules\Module\Service;
+use Modules\Module\Service as ModuleService;
+use Modules\Migration\Service as MigrationService;
+use Modules\Migration\Config;
+use Modules\Migration\Mapper as MigrationMapper;
 use Modules\Module\DbRepository;
-use Modules\Module\Mapper;
+use Modules\Module\Mapper as ModuleMapper;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ControllerProviderInterface,
                         ServiceProviderInterface, ConsoleUsageProviderInterface
@@ -58,11 +61,11 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                     return new Metadata($sl->get('Zend\Db\Adapter\Adapter'));
                 },
                 'Modules\Module\Service' => function (ServiceManager $sl) {
-                    return new Service($sl->get('Modules\Module\DbRepository'));
+                    return new ModuleService($sl->get('Modules\Module\DbRepository'));
                 },
                 'Modules\Module\DbRepository' => function (ServiceManager $sl) {
                     $tableGateway = $sl->get('Modules\Module\TableGateway');
-                    $mapper = new Mapper();
+                    $mapper = new ModuleMapper();
 
                     return new DbRepository($tableGateway, $mapper);
                 },
@@ -71,6 +74,10 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                         't4_modules',
                         $sl->get('Zend\Db\Adapter\Adapter')
                     );
+                },
+
+                'Modules\Migration\Service' => function (ServiceManager $sl) {
+                    return new MigrationService(new Config(), new MigrationMapper($sl));
                 },
             )
         );
@@ -106,7 +113,8 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
 
                     return new Controller\Console\InstallController(
                         $sl->get('Modules\Module\Service'),
-                        new ComposerInfo('composer.lock')
+                        new ComposerInfo('composer.lock'),
+                        $sl->get('Modules\Migration\Service')
                     );
                 },
             )

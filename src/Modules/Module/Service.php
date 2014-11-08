@@ -3,6 +3,8 @@
 namespace Modules\Module;
 
 use ComposerLockParser\Package;
+use Modules\Migration\MigrationsCollection;
+use Modules\Migration\Migration;
 
 class Service {
 
@@ -50,4 +52,4 @@ class Service {
         $this->repository->add($module);
     }
 
-} 
+}

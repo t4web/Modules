@@ -65,12 +65,12 @@ class InitController extends AbstractActionController {
 
     private function getDatabaseName()
     {
-        $shemas = $this->metadata->getSchemas();
+        $schemas = $this->metadata->getSchemas();
 
-        if (!array_key_exists(0, $shemas)) {
+        if (!array_key_exists(0, $schemas)) {
             return;
         }
 
-        return $shemas[0];
+        return $schemas[0];
     }
 }

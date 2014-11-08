@@ -44,7 +44,12 @@ class InstallControllerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $migrationServiceMock = $this->getMockBuilder('Modules\Migration\Service')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->serviceManager->setService('Modules\Module\Service', $moduleServiceMock);
+        $this->serviceManager->setService('Modules\Migration\Service', $migrationServiceMock);
 
         $this->assertTrue($this->controllerManager->has('Modules\Controller\Console\Install'));
 

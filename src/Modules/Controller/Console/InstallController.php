@@ -3,7 +3,8 @@
 namespace Modules\Controller\Console;
 
 use Zend\Mvc\Controller\AbstractActionController;
-use Modules\Module\Service;
+use Modules\Module\Service as ModuleService;
+use Modules\Migration\Service as MigrationService;
 use ComposerLockParser\ComposerInfo;
 
 class InstallController extends AbstractActionController {
@@ -18,12 +19,23 @@ class InstallController extends AbstractActionController {
      */
     private $composerInfo;
 
-    public function __construct(Service $moduleService, ComposerInfo $composerInfo){
+    /**
+     * @var MigrationService
+     */
+    private $migrationService;
+
+    public function __construct(
+        ModuleService $moduleService,
+        ComposerInfo $composerInfo,
+        MigrationService $migrationService)
+    {
         $this->moduleService = $moduleService;
         $this->composerInfo = $composerInfo;
+        $this->migrationService = $migrationService;
     }
 
-    public function runAction() {
+    public function runAction()
+    {
         $moduleName = $this->params('moduleName');
 
         $module = $this->moduleService->getModuleByName($moduleName);
@@ -46,6 +58,8 @@ class InstallController extends AbstractActionController {
         }
 
         $this->moduleService->install($module);
+
+        $this->migrationService->run($module, 'unknown');
 
         return "Installation $moduleName success completed" . PHP_EOL;
     }
