@@ -3,9 +3,10 @@
 namespace Modules\Controller\Console;
 
 use Zend\Mvc\Controller\AbstractActionController;
+use ComposerLockParser\ComposerInfo;
 use Modules\Module\Service as ModuleService;
 use Modules\Migration\Service as MigrationService;
-use ComposerLockParser\ComposerInfo;
+use Modules\Module\Service\StatusCalculator;
 
 class InstallController extends AbstractActionController {
 
@@ -24,34 +25,39 @@ class InstallController extends AbstractActionController {
      */
     private $migrationService;
 
+    /**
+     * @var StatusCalculator
+     */
+    private $statusCalculator;
+
     public function __construct(
         ModuleService $moduleService,
         ComposerInfo $composerInfo,
-        MigrationService $migrationService)
+        MigrationService $migrationService,
+        StatusCalculator $statusCalculator)
     {
         $this->moduleService = $moduleService;
         $this->composerInfo = $composerInfo;
         $this->migrationService = $migrationService;
+        $this->statusCalculator = $statusCalculator;
     }
 
     public function runAction()
     {
         $moduleName = $this->params('moduleName');
 
-        $module = $this->moduleService->getModuleByName($moduleName);
-
         $this->composerInfo->parse();
 
-        $packagesCollection = $this->composerInfo->getPackages();
+        $modules = $this->moduleService->getAll();
+        $packages = $this->composerInfo->getPackages();
 
-        if (!$packagesCollection->hasPackage($moduleName)) {
+        $this->statusCalculator->calculate($modules, $packages);
+
+        if (!$modules->hasByName($moduleName)) {
             return "Module $moduleName not exists" . PHP_EOL;
         }
 
-        $this->moduleService->calculateStatus(
-            $module,
-            $packagesCollection->getByName($moduleName)
-        );
+        $module = $modules->getByName($moduleName);
 
         if (!$module->isNeedInstallation()) {
             return "Module $moduleName not need installation" . PHP_EOL;

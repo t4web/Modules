@@ -5,6 +5,8 @@ namespace Modules\ViewModel\Console;
 use Zend\View\Model\ViewModel;
 use Zend\Loader\AutoloaderFactory;
 use ComposerLockParser\PackagesCollection;
+use Modules\Module\ModulesCollection;
+use Modules\Module\Service as ModuleService;
 
 class ListViewModel extends ViewModel {
 
@@ -14,51 +16,14 @@ class ListViewModel extends ViewModel {
     private $packages;
 
     /**
-     * @var array
+     * @var ModulesCollection
      */
-    private $loadedModules;
+    private $modules;
 
     /**
-     * @return array
+     * @var ModuleService
      */
-    public function getLoadedModules()
-    {
-        return $this->collectNamespaces($this->loadedModules);
-    }
-
-    /**
-     * @param array $loadedModules
-     *
-     * @return array
-     */
-    private function collectNamespaces(array $loadedModules)
-    {
-        $namespaces = [];
-
-        foreach ($loadedModules as $module) {
-
-            if (!method_exists($module, 'getAutoloaderConfig')) {
-                continue;
-            }
-            $autoloaderConfig = $module->getAutoloaderConfig();
-
-            if (!array_key_exists(AutoloaderFactory::STANDARD_AUTOLOADER, $autoloaderConfig)) {
-                continue;
-            }
-
-            $namespaces += $autoloaderConfig[AutoloaderFactory::STANDARD_AUTOLOADER]['namespaces'];
-        }
-
-        return $namespaces;
-    }
-
-    /**
-     * @param array $loadedModules
-     */
-    public function setLoadedModules(array $loadedModules)
-    {
-        $this->loadedModules = $loadedModules;
-    }
+    private $moduleService;
 
     /**
      * @return PackagesCollection
@@ -74,6 +39,38 @@ class ListViewModel extends ViewModel {
     public function setPackages(PackagesCollection $packages)
     {
         $this->packages = $packages;
+    }
+
+    /**
+     * @param ModulesCollection $modules
+     */
+    public function setModules(ModulesCollection $modules)
+    {
+        $this->modules = $modules;
+    }
+
+    /**
+     * @return ModulesCollection
+     */
+    public function getModules()
+    {
+        return $this->modules;
+    }
+
+    /**
+     * @return ModuleService
+     */
+    public function getModuleService()
+    {
+        return $this->moduleService;
+    }
+
+    /**
+     * @param ModuleService $moduleService
+     */
+    public function setModuleService($moduleService)
+    {
+        $this->moduleService = $moduleService;
     }
 
 } 

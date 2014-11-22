@@ -12,7 +12,6 @@ use Zend\EventManager\SharedEventManager;
 class ListControllerTest extends \PHPUnit_Framework_TestCase
 {
     private $serviceManager;
-    private $serviceManagerConfig;
 
     /**
      * @var ControllerManager
@@ -41,21 +40,30 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
 
     public function testCreation()
     {
-        $moduleManagerMock = $this->getMockBuilder('\Zend\ModuleManager\ModuleManager')
+        $moduleManagerMock = $this->getMockBuilder('Zend\ModuleManager\ModuleManager')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $moduleService = $this->getMockBuilder('Modules\Module\Service')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $statusCalculator = $this->getMockBuilder('Modules\Module\Service\StatusCalculator')
             ->disableOriginalConstructor()
             ->getMock();
 
         $this->serviceManager->setService('ModuleManager', $moduleManagerMock);
+        $this->serviceManager->setService('Modules\Module\Service', $moduleService);
+        $this->serviceManager->setService('Modules\Module\Service\StatusCalculator', $statusCalculator);
 
         $this->assertTrue($this->controllerManager->has('Modules\Controller\Console\List'));
 
         $controller = $this->controllerManager->get('Modules\Controller\Console\List');
 
         $this->assertInstanceOf('Modules\Controller\Console\ListController', $controller);
-        $this->assertAttributeSame($moduleManagerMock, 'moduleManager', $controller);
-        $this->assertAttributeInstanceOf('\ComposerLockParser\ComposerInfo', 'composerInfo', $controller);
-        $this->assertAttributeInstanceOf('\Zend\View\Renderer\PhpRenderer', 'renderer', $controller);
-        $this->assertAttributeInstanceOf('\Modules\ViewModel\Console\ListViewModel', 'viewModel', $controller);
+        $this->assertAttributeInstanceOf('ComposerLockParser\ComposerInfo', 'composerInfo', $controller);
+        $this->assertAttributeInstanceOf('Zend\View\Renderer\PhpRenderer', 'renderer', $controller);
+        $this->assertAttributeInstanceOf('Modules\ViewModel\Console\ListViewModel', 'viewModel', $controller);
     }
 
 }

@@ -7,6 +7,8 @@ use Zend\ModuleManager\ModuleManagerInterface;
 use Zend\View\Renderer\PhpRenderer;
 use ComposerLockParser\ComposerInfo;
 use Modules\ViewModel\Console\ListViewModel;
+use Modules\Module\Service as ModuleService;
+use Modules\Module\Service\StatusCalculator;
 
 class ListController extends AbstractActionController
 {
@@ -22,6 +24,16 @@ class ListController extends AbstractActionController
     private $composerInfo;
 
     /**
+     * @var ModuleService
+     */
+    private $moduleService;
+
+    /**
+     * @var StatusCalculator
+     */
+    private $statusCalculator;
+
+    /**
      * @var ViewModel
      */
     private $viewModel;
@@ -32,13 +44,15 @@ class ListController extends AbstractActionController
     private $renderer;
 
     public function __construct(
-        ModuleManagerInterface $moduleManager,
         ComposerInfo $composerInfo,
+        ModuleService $moduleService,
+        StatusCalculator $statusCalculator,
         ListViewModel $viewModel,
         PhpRenderer $renderer)
     {
-        $this->moduleManager = $moduleManager;
         $this->composerInfo = $composerInfo;
+        $this->moduleService = $moduleService;
+        $this->statusCalculator = $statusCalculator;
         $this->viewModel = $viewModel;
         $this->renderer = $renderer;
     }
@@ -47,8 +61,14 @@ class ListController extends AbstractActionController
     {
         $this->composerInfo->parse();
 
-        $this->viewModel->setPackages($this->composerInfo->getPackages());
-        $this->viewModel->setLoadedModules($this->moduleManager->getLoadedModules());
+        $modules = $this->moduleService->getAll();
+        $packages = $this->composerInfo->getPackages();
+
+        $this->statusCalculator->calculate($modules, $packages);
+
+        $this->viewModel->setPackages($packages);
+        $this->viewModel->setModules($modules);
+        $this->viewModel->setModuleService($this->moduleService);
 
         $this->viewModel->setTemplate('list-show');
 

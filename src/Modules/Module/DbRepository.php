@@ -41,6 +41,23 @@ class DbRepository {
         return $entity;
     }
 
+    /**
+     * @param array|null $criteria
+     *
+     * @return ModulesCollection|null
+     */
+    public function findAll(array $criteria = null)
+    {
+        $rows = $this->tableGateway->select($criteria)->toArray();
+
+        $entitiesCollection = $this->mapper->fromTableRows($rows);
+
+        return $entitiesCollection;
+    }
+
+    /**
+     * @param Module $module
+     */
     public function add(Module $module)
     {
         $row = $this->mapper->toTableRow($module);
@@ -48,11 +65,14 @@ class DbRepository {
         $this->tableGateway->insert($row);
     }
 
+    /**
+     * @param Module $module
+     *
+     * @return integer
+     */
     public function remove(Module $module)
     {
-        $row = $this->mapper->toTableRow($module);
-
-        $this->tableGateway->delete([ 'name' => $module->getName()]);
+        return $this->tableGateway->delete([ 'name' => $module->getName()]);
     }
 
 } 

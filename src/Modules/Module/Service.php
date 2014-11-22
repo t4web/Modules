@@ -31,23 +31,19 @@ class Service {
     }
 
     /**
-     * @param Module  $module
-     * @param Package $package
-     */
-    public function calculateStatus(Module &$module = null, Package $package)
-    {
-        if (is_null($module)) {
-            $module = new Module($package->getName(), $package->getVersion());
-            $module->setNeedInstallation();
-        }
-    }
-
-    /**
      * @param Module $module
      */
     public function install(Module $module)
     {
         $this->repository->add($module);
+    }
+
+    /**
+     * @return ModulesCollection
+     */
+    public function getAll()
+    {
+        return $this->repository->findAll();
     }
 
 }

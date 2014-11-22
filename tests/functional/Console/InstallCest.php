@@ -15,12 +15,12 @@ class InstallCest
     protected $event;
     protected $routeMatch;
     protected $stdOutWriter;
-    protected $controller;
+    protected $application;
 
     public function _before(FunctionalTester $I)
     {
-        $application = $I->getApplication();
-        $this->event = $application->getMvcEvent();
+        $this->application = $I->getApplication();
+        $this->event = $this->application->getMvcEvent();
 
         $this->routeMatch = new RouteMatch(
             array(
@@ -28,27 +28,28 @@ class InstallCest
             )
         );
         $this->event->setRouteMatch($this->routeMatch);
-
-        $this->controller = new InstallController(
-            $application->getServiceManager()->get('Modules\Module\Service'),
-            new ComposerInfo('composer.lock'),
-            $application->getServiceManager()->get('Modules\Migration\Service')
-        );
-
-        $this->controller->setEvent($this->event);
-        $this->controller->setEventManager($application->getEventManager());
-        $this->controller->setServiceLocator($application->getServiceManager());
     }
 
     // tests
     public function tryInstallNotExistingModule(FunctionalTester $I)
     {
-        $I->wantTo("Check install module");
+        $I->wantTo("Check install not existing module");
 
         $this->routeMatch->setParam('action', 'run');
         $this->routeMatch->setParam('moduleName', 'test/module');
 
-        $result = $this->controller->dispatch(
+        $controller = new InstallController(
+            $this->application->getServiceManager()->get('Modules\Module\Service'),
+            new ComposerInfo('composer.lock'),
+            $this->application->getServiceManager()->get('Modules\Migration\Service'),
+            $this->application->getServiceManager()->get('Modules\Module\Service\StatusCalculator')
+        );
+
+        $controller->setEvent($this->event);
+        $controller->setEventManager($this->application->getEventManager());
+        $controller->setServiceLocator($this->application->getServiceManager());
+
+        $result = $controller->dispatch(
             new ConsoleRequest(
                 array(
                     0 => 'public/index.php',
@@ -59,7 +60,7 @@ class InstallCest
         );
 
         /** @var Zend\Http\PhpEnvironment\Response $response */
-        $response = $this->controller->getResponse();
+        $response = $controller->getResponse();
 
         \PHPUnit_Framework_Assert::assertEquals(200, $response->getStatusCode());
         \PHPUnit_Framework_Assert::assertEquals("Module test/module not exists" . PHP_EOL, $result);
@@ -72,20 +73,22 @@ class InstallCest
         $this->routeMatch->setParam('action', 'run');
         $this->routeMatch->setParam('moduleName', 'test/module');
 
+        $this->mockModuleManager($this->application->getServiceManager());
+
         $composerInfoMock = $this->getComposerInfoStub();
 
-        $application = $I->getApplication();
-        $this->controller = new InstallController(
-            $application->getServiceManager()->get('Modules\Module\Service'),
+        $controller = new InstallController(
+            $this->application->getServiceManager()->get('Modules\Module\Service'),
             $composerInfoMock,
-            Stub::make('Modules\Migration\Service', ['run' => true])
+            Stub::make('Modules\Migration\Service', ['run' => true]),
+            $this->application->getServiceManager()->get('Modules\Module\Service\StatusCalculator')
         );
 
-        $this->controller->setEvent($this->event);
-        $this->controller->setEventManager($application->getEventManager());
-        $this->controller->setServiceLocator($application->getServiceManager());
+        $controller->setEvent($this->event);
+        $controller->setEventManager($this->application->getEventManager());
+        $controller->setServiceLocator($this->application->getServiceManager());
 
-        $result = $this->controller->dispatch(
+        $result = $controller->dispatch(
             new ConsoleRequest(
                 array(
                     0 => 'public/index.php',
@@ -96,49 +99,47 @@ class InstallCest
         );
 
         /** @var Zend\Http\PhpEnvironment\Response $response */
-        $response = $this->controller->getResponse();
+        $response = $controller->getResponse();
 
         \PHPUnit_Framework_Assert::assertEquals(200, $response->getStatusCode());
         \PHPUnit_Framework_Assert::assertEquals("Installation test/module success completed" . PHP_EOL, $result);
 
         /** @var Modules\Module\DbRepository $repository */
-        $repository = $application->getServiceManager()->get('Modules\Module\DbRepository');
+        $repository = $this->application->getServiceManager()->get('Modules\Module\DbRepository');
 
         $module = $repository->find(['name' => 'test/module']);
 
         \PHPUnit_Framework_Assert::assertInstanceOf('Modules\Module\Module', $module);
         \PHPUnit_Framework_Assert::assertEquals('test/module', $module->getName());
-
-        $repository->remove($module);
     }
 
     public function tryInstallInstalledModule(FunctionalTester $I)
     {
-        $I->wantTo("Check install module");
+        $I->wantTo("Check install already installed module");
 
         $this->routeMatch->setParam('action', 'run');
         $this->routeMatch->setParam('moduleName', 'test/module');
 
         $composerInfoMock = $this->getComposerInfoStub();
 
-        $application = $I->getApplication();
-        $this->controller = new InstallController(
-            $application->getServiceManager()->get('Modules\Module\Service'),
+        $controller = new InstallController(
+            $this->application->getServiceManager()->get('Modules\Module\Service'),
             $composerInfoMock,
-            Stub::make('Modules\Migration\Service', ['run' => true])
+            Stub::make('Modules\Migration\Service', ['run' => true]),
+            $this->application->getServiceManager()->get('Modules\Module\Service\StatusCalculator')
         );
 
-        $this->controller->setEvent($this->event);
-        $this->controller->setEventManager($application->getEventManager());
-        $this->controller->setServiceLocator($application->getServiceManager());
+        $controller->setEvent($this->event);
+        $controller->setEventManager($this->application->getEventManager());
+        $controller->setServiceLocator($this->application->getServiceManager());
 
         /** @var Modules\Module\DbRepository $repository */
-        $repository = $application->getServiceManager()->get('Modules\Module\DbRepository');
+        $repository = $this->application->getServiceManager()->get('Modules\Module\DbRepository');
 
-        $module = Stub::make('Modules\Module\Module', ['getName' => 'test/module']);
+        $module = Stub::make('Modules\Module\Module', ['getName' => 'test/module', 'getVersion' => '0.0.1']);
         $repository->add($module);
 
-        $result = $this->controller->dispatch(
+        $result = $controller->dispatch(
             new ConsoleRequest(
                 array(
                     0 => 'public/index.php',
@@ -149,12 +150,21 @@ class InstallCest
         );
 
         /** @var Zend\Http\PhpEnvironment\Response $response */
-        $response = $this->controller->getResponse();
+        $response = $controller->getResponse();
 
         \PHPUnit_Framework_Assert::assertEquals(200, $response->getStatusCode());
         \PHPUnit_Framework_Assert::assertEquals("Module test/module not need installation" . PHP_EOL, $result);
+    }
 
-        $repository->remove($module);
+    private function mockModuleManager($serviceManager)
+    {
+        $serviceManager->setAllowOverride(true);
+
+        $loadedModules = ['TestModule' => Stub::make('Modules\Module')];
+
+        $moduleManagerMock = Stub::make('Zend\ModuleManager\ModuleManager', ['getLoadedModules' => $loadedModules]);
+
+        $serviceManager->setService('ModuleManager', $moduleManagerMock);
     }
 
     private function getComposerInfoStub()
@@ -176,7 +186,7 @@ class InstallCest
                                 'type'        => 'type value',
                                 'autoload'    => [
                                     "psr-4" => [
-                                        "Name\\Space\\" => "src/"
+                                        "TestModule" => "src/"
                                     ]
                                 ],
                                 'license'     => ['license value'],
@@ -190,6 +200,28 @@ class InstallCest
                 ),
             ]
         );
+    }
+
+    public function _after(FunctionalTester $I)
+    {
+        $this->clearDB($I);
+    }
+
+    public function _failed(FunctionalTester $I, $fail)
+    {
+        $this->clearDB($I);
+    }
+
+    private function clearDB(FunctionalTester $I)
+    {
+        $application = $I->getApplication();
+
+        /** @var Modules\Module\DbRepository $repository */
+        $repository = $application->getServiceManager()->get('Modules\Module\DbRepository');
+
+        $module = Stub::make('Modules\Module\Module', ['getName' => 'test/module']);
+
+        $repository->remove($module);
     }
 
 }

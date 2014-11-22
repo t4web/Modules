@@ -18,6 +18,11 @@ class Module {
     /**
      * @var string
      */
+    private $namespace;
+
+    /**
+     * @var string
+     */
     private $version;
 
     /**
@@ -25,9 +30,10 @@ class Module {
      */
     private $status;
 
-    public function __construct($name, $version)
+    public function __construct($name, $namespace, $version)
     {
         $this->name = $name;
+        $this->namespace = $namespace;
         $this->version = $version;
     }
 
@@ -40,11 +46,11 @@ class Module {
     }
 
     /**
-     * @return boolean
+     * @return string
      */
-    public function isNeedInstallation()
+    public function getNamespace()
     {
-        return $this->status == self::STATUS_NEED_INSTALLATION;
+        return $this->namespace;
     }
 
     /**
@@ -55,9 +61,67 @@ class Module {
         return $this->version;
     }
 
+    /**
+     * @return boolean
+     */
+    public function isNeedInstallation()
+    {
+        return $this->status == self::STATUS_NEED_INSTALLATION;
+    }
+
     public function setNeedInstallation()
     {
         $this->status = self::STATUS_NEED_INSTALLATION;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isActive()
+    {
+        return $this->status == self::STATUS_ACTIVE;
+    }
+
+    public function setActive()
+    {
+        $this->status = self::STATUS_ACTIVE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNeedUpgrade()
+    {
+        return $this->status == self::STATUS_NEED_UPGRADE;
+    }
+
+    public function setNeedUpgrade()
+    {
+        $this->status = self::STATUS_NEED_UPGRADE;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isAbsent()
+    {
+        return $this->status == self::STATUS_ABSENT;
+    }
+
+    public function setAbsent()
+    {
+        $this->status = self::STATUS_ABSENT;
+    }
+
+    public function getStatusName()
+    {
+        $statuses = [
+            self::STATUS_ACTIVE => 'active',
+            self::STATUS_NEED_INSTALLATION => 'need install',
+            self::STATUS_NEED_UPGRADE => 'need upgrade',
+            self::STATUS_ABSENT => 'absent',
+        ];
+        return isset($statuses[$this->status]) ? $statuses[$this->status] : 'unknown';
     }
 
 } 

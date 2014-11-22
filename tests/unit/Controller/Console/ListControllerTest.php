@@ -2,6 +2,7 @@
 namespace Modules\UnitTest\Controller\Console;
 
 use Modules\Controller\Console\ListController;
+use Modules\Module\ModulesCollection;
 use ComposerLockParser\PackagesCollection;
 
 class ListControllerTest extends \PHPUnit_Framework_TestCase
@@ -11,18 +12,22 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
      */
     private $controller;
 
-    private $moduleManagerMock;
     private $composerInfo;
+    private $moduleService;
     private $viewModelMock;
     private $rendererMock;
 
     protected function setUp()
     {
-        $this->moduleManagerMock = $this->getMockBuilder('\Zend\ModuleManager\ModuleManager')
+        $this->composerInfo = $this->getMockBuilder('\ComposerLockParser\ComposerInfo')
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->composerInfo = $this->getMockBuilder('\ComposerLockParser\ComposerInfo')
+        $this->moduleService = $this->getMockBuilder('\Modules\Module\Service')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->statusCalculator = $this->getMockBuilder('\Modules\Module\Service\StatusCalculator')
             ->disableOriginalConstructor()
             ->getMock();
 
@@ -31,8 +36,9 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
         $this->rendererMock = $this->getMock('\Zend\View\Renderer\PhpRenderer');
 
         $this->controller = new ListController(
-            $this->moduleManagerMock,
             $this->composerInfo,
+            $this->moduleService,
+            $this->statusCalculator,
             $this->viewModelMock,
             $this->rendererMock
         );
@@ -47,17 +53,9 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
             ->method('getPackages')
             ->will($this->returnValue(new PackagesCollection()));
 
-        $this->moduleManagerMock->expects($this->once())
-            ->method('getLoadedModules')
-            ->will(
-                $this->returnValue(
-                    array(
-                        'Application'    => new \Application\Module(),
-                        'Authentication' => new \Authentication\Module(),
-                        'Modules'        => new \Modules\Module(),
-                    )
-                )
-            );
+        $this->moduleService->expects($this->once())
+            ->method('getAll')
+            ->will($this->returnValue(new ModulesCollection()));
 
         $this->controller->showAction();
     }

@@ -39,8 +39,9 @@ class ListCest
         $this->viewModel = new ListViewModel();
 
         $this->controller = new ListController(
-            $application->getServiceManager()->get('ModuleManager'),
             new ComposerInfo('composer.lock'),
+            $application->getServiceManager()->get('Modules\Module\Service'),
+            $application->getServiceManager()->get('Modules\Module\Service\StatusCalculator'),
             $this->viewModel,
             $renderer
         );
@@ -76,9 +77,5 @@ class ListCest
         \PHPUnit_Framework_Assert::assertInstanceOf('ComposerLockParser\PackagesCollection', $this->viewModel->getPackages());
         \PHPUnit_Framework_Assert::assertGreaterThan(0, $this->viewModel->getPackages()->count());
         \PHPUnit_Framework_Assert::assertInstanceOf('ComposerLockParser\Package', $this->viewModel->getPackages()->getByName('t4web/modules'));
-
-        \PHPUnit_Framework_Assert::assertInternalType('array', $this->viewModel->getLoadedModules());
-        \PHPUnit_Framework_Assert::assertGreaterThan(0, count($this->viewModel->getLoadedModules()));
-        \PHPUnit_Framework_Assert::assertArrayHasKey('Modules', $this->viewModel->getLoadedModules());
     }
 }

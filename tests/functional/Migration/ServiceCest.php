@@ -24,6 +24,7 @@ class ServiceCest
     // tests
     public function tryRunAll(FunctionalTester $I)
     {
+        /** @var Zend\Db\Adapter\Adapter $dbAdapter */
         $dbAdapter = $this->serviceManager->get('Zend\Db\Adapter\Adapter');
 
         $dbAdapter->query("DROP TABLE IF EXISTS test_migration, test_migration2", Adapter::QUERY_MODE_EXECUTE);

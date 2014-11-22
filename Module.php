@@ -14,12 +14,13 @@ use Zend\ServiceManager\ServiceManager;
 use ComposerLockParser\ComposerInfo;
 use Zend\View\Renderer\PhpRenderer;
 use Modules\ViewModel\Console\ListViewModel;
-use Modules\Module\Service as ModuleService;
 use Modules\Migration\Service as MigrationService;
 use Modules\Migration\Config;
 use Modules\Migration\Mapper as MigrationMapper;
 use Modules\Module\DbRepository;
 use Modules\Module\Mapper as ModuleMapper;
+use Modules\Module\Service as ModuleService;
+use Modules\Module\Service\StatusCalculator;
 
 class Module implements AutoloaderProviderInterface, ConfigProviderInterface, ControllerProviderInterface,
                         ServiceProviderInterface, ConsoleUsageProviderInterface
@@ -63,6 +64,10 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                 'Modules\Module\Service' => function (ServiceManager $sl) {
                     return new ModuleService($sl->get('Modules\Module\DbRepository'));
                 },
+                'Modules\Module\Service\StatusCalculator' => function (ServiceManager $sl) {
+                    $moduleManager = $sl->get('ModuleManager');
+                    return new StatusCalculator($moduleManager->getLoadedModules(false));
+                },
                 'Modules\Module\DbRepository' => function (ServiceManager $sl) {
                     $tableGateway = $sl->get('Modules\Module\TableGateway');
                     $mapper = new ModuleMapper();
@@ -94,8 +99,9 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                     $renderer->resolver()->setPaths([__DIR__ . '/view']);
 
                     return new Controller\Console\ListController(
-                        $sl->get('ModuleManager'),
                         new ComposerInfo('composer.lock'),
+                        $sl->get('Modules\Module\Service'),
+                        $sl->get('Modules\Module\Service\StatusCalculator'),
                         new ListViewModel(),
                         $renderer
                     );
@@ -114,7 +120,8 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                     return new Controller\Console\InstallController(
                         $sl->get('Modules\Module\Service'),
                         new ComposerInfo('composer.lock'),
-                        $sl->get('Modules\Migration\Service')
+                        $sl->get('Modules\Migration\Service'),
+                        $sl->get('Modules\Module\Service\StatusCalculator')
                     );
                 },
             )

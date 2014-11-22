@@ -35,26 +35,38 @@ $cli->backgroundLightCyan(
     '  <black>'
     . sprintf("%-16s", 'Version')
     . sprintf("%-14s", 'Status')
+    . sprintf("%-20s", 'Namespace')
     . sprintf("%-40s", 'Name')
     . "</black>"
 );
 
-foreach ($viewModel->getLoadedModules() as $moduleName => $path) {
+foreach ($viewModel->getModules() as $module) {
 
-    $version = 'unknown';
-    if (isset($packages[$moduleName])) {
-        $version = $packages[$moduleName]['version'];
-        $moduleName = $packages[$moduleName]['name'];
+    if (in_array($module->getStatusName(), ['need install', 'need upgrade'])) {
+
+        $cli->out(
+            '  '
+            . sprintf("%-16s", $module->getVersion())
+            . "<yellow>"
+            . sprintf("%-14s", $module->getStatusName())
+            . "</yellow>"
+            . sprintf("%-20s", $module->getNamespace())
+            . "<green>"
+            . sprintf("%-40s", $module->getName())
+            . "</green>"
+        );
+
+    } else {
+        $cli->out(
+            '  '
+            . sprintf("%-16s", $module->getVersion())
+            . sprintf("%-14s", $module->getStatusName())
+            . sprintf("%-20s", $module->getNamespace())
+            . "<green>"
+            . sprintf("%-40s", $module->getName())
+            . "</green>"
+        );
     }
-
-    $cli->out(
-        '  '
-        . sprintf("%-16s", $version)
-        . sprintf("%-14s", 'need install')
-        . "<green>"
-        . sprintf("%-40s", $moduleName)
-        . "</green>"
-    );
 
 }
 

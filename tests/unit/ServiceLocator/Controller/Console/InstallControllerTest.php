@@ -48,8 +48,13 @@ class InstallControllerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
+        $statusCalculatorMock = $this->getMockBuilder('Modules\Module\Service\StatusCalculator')
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->serviceManager->setService('Modules\Module\Service', $moduleServiceMock);
         $this->serviceManager->setService('Modules\Migration\Service', $migrationServiceMock);
+        $this->serviceManager->setService('Modules\Module\Service\StatusCalculator', $statusCalculatorMock);
 
         $this->assertTrue($this->controllerManager->has('Modules\Controller\Console\Install'));
 
@@ -58,6 +63,7 @@ class InstallControllerTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('Modules\Controller\Console\InstallController', $controller);
         $this->assertAttributeSame($moduleServiceMock, 'moduleService', $controller);
         $this->assertAttributeInstanceOf('ComposerLockParser\ComposerInfo', 'composerInfo', $controller);
+        $this->assertAttributeSame($statusCalculatorMock, 'statusCalculator', $controller);
     }
 
 }
