@@ -94,7 +94,7 @@ When perform migration version will execute consecutively.
 
 Example 1: Your module version is '0.0.2', new version is '0.1.0', when you perform migrations, will be runs '0.0.2', '0.0.3'.
 
-Example 2: Your module version is '0.0.3', new version is '0.1.0', when you perform migrations, will be runs '0.0.3', '0.1.0'.
+Example 2: Your module version is '0.0.3', new version is '0.1.0', when you perform migrations, will be runs '0.0.3'.
 
 Example 3: Your module version is '0.1.0', no new versions, when you perform migrations, you will see `Module MODULENAME not need upgrade`.
 
