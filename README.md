@@ -80,7 +80,7 @@ return array(
         'next' => '0.0.3'
     ],
     '0.0.3'   => [
-        'run'  => 'SomeModule\Migrations\Migration_0_0_2',
+        'run'  => 'SomeModule\Migrations\Migration_0_0_3',
         'next' => '0.1.0'
     ],
     '0.1.0'   => [
