@@ -17,7 +17,7 @@ Features / Goals
 ----------------
 * List used modules/libraries/dependencies in console [DONE]
 * Install new modules (and run migrations if it have) in console [DONE]
-* Upgrade modules (if it have migrations) in console [IN PROGRESS]
+* Upgrade modules (if it have migrations) in console [DONE]
 * List used modules in admin (backend) zone [IN PROGRESS]
 * Install new modules (if it have initial migrations) in admin (backend) zone [IN PROGRESS]
 * Upgrade modules (if it have migrations) in admin (backend) zone [IN PROGRESS]
@@ -71,31 +71,39 @@ Usage
 For manage modules migrations each module must have config/migrations.config.php
 ```php
 return array(
-    'unknown' => 'Authentication\Migrations\Install',
-    '0.2.1' => 'Authentication\Migrations\Upgrade_0_2_1',
-    '0.2.2' => 'Authentication\Migrations\Upgrade_0_2_2',
-    '1.0.0' => 'Authentication\Migrations\Upgrade_1_0_0',
+    'unknown' => [
+        'run'  => 'SomeModule\Migrations\Migration_0_0_1',
+        'next' => '0.0.2'
+    ],
+    '0.0.2'   => [
+        'run'  => 'SomeModule\Migrations\Migration_0_0_2',
+        'next' => '0.0.3'
+    ],
+    '0.0.3'   => [
+        'run'  => 'SomeModule\Migrations\Migration_0_0_2',
+        'next' => '0.1.0'
+    ],
+    '0.1.0'   => [
+        'current' => true
+    ],
 );
 ```
-'unknown' - runs for modules, wich have initial migrations, value - migration class. '0.2.1', '1.0.0' - version number for start upgrades (run migrations), value - migration class
+Keys - versions, values - migration details. `unknown` - runs for modules, wich have initial migrations, `run` - migration class, `next` - next migration version.
 
 When perform migration version will execute consecutively.
 
-Example 1: Your module version is '0.2.1', new version is '1.0.1' when you perform
-migrations, will be runs '0.2.1', '0.2.2', '1.0.0'.
+Example 1: Your module version is '0.0.2', new version is '0.1.0', when you perform migrations, will be runs '0.0.2', '0.0.3'.
 
-Example 2: Your module version is '0.2.2', new version is '1.0.1' when you perform
-migrations, will be runs '0.2.2', '1.0.0'.
+Example 2: Your module version is '0.0.3', new version is '0.1.0', when you perform migrations, will be runs '0.0.3', '0.1.0'.
 
-Example 3: Your module version is '0.2.13', new version is '1.0.1' when you perform
-migrations, will be runs '1.0.0'.
+Example 3: Your module version is '0.1.0', no new versions, when you perform migrations, you will see `Module MODULENAME not need upgrade`.
 
 For list modules run
 ```bash
 $ php public/index.php modules list
 ```
 result will be like this:
-<p align="center"><img src="http://t4web.com.ua/var/module-list-example-0.2.3.png" width="844" alt="module list example" /></p>
+<p align="center"><img src="http://t4web.com.ua/var/module-list-example-0.2.6.png" width="850" alt="module list example" /></p>
 
 Testing
 ------------
