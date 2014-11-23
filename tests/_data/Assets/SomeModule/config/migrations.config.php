@@ -15,6 +15,9 @@ return [
     ],
     '0.1.3'   => [
         'run'  => 'SomeModule\Migrations\Migration_0_1_3',
-        'next' => false
+        'next' => '0.1.4'
+    ],
+    '0.1.4'   => [
+        'current' => true
     ],
 ];

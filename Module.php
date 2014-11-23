@@ -11,6 +11,7 @@ use Zend\Console\Adapter\AdapterInterface as ConsoleAdapterInterface;
 use Zend\Db\Metadata\Metadata;
 use Zend\Db\TableGateway\TableGateway;
 use Zend\ServiceManager\ServiceManager;
+use Zend\EventManager\EventManager;
 use ComposerLockParser\ComposerInfo;
 use Zend\View\Renderer\PhpRenderer;
 use Modules\ViewModel\Console\ListViewModel;
@@ -82,7 +83,15 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                 },
 
                 'Modules\Migration\Service' => function (ServiceManager $sl) {
-                    return new MigrationService(new Config(), new MigrationMapper($sl));
+                    return new MigrationService(
+                        $sl->get('Modules\Migration\Config'),
+                        new MigrationMapper($sl),
+                        new EventManager('Modules\Migration\Service')
+                    );
+                },
+
+                'Modules\Migration\Config' => function (ServiceManager $sl) {
+                    return new Config();
                 },
             )
         );
@@ -115,6 +124,16 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                     );
                 },
                 'Modules\Controller\Console\Install' => function (ControllerManager $cm) {
+                    $sl = $cm->getServiceLocator();
+
+                    return new Controller\Console\InstallController(
+                        $sl->get('Modules\Module\Service'),
+                        new ComposerInfo('composer.lock'),
+                        $sl->get('Modules\Migration\Service'),
+                        $sl->get('Modules\Module\Service\StatusCalculator')
+                    );
+                },
+                'Modules\Controller\Console\Upgrade' => function (ControllerManager $cm) {
                     $sl = $cm->getServiceLocator();
 
                     return new Controller\Console\InstallController(

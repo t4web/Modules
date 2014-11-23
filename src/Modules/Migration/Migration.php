@@ -23,11 +23,16 @@ class Migration {
     private $next;
 
     /**
+     * @var boolean
+     */
+    private $isCurrent = false;
+
+    /**
      * @var ServiceManager
      */
     private $serviceManager;
 
-    private function __construct($version, $run, $next, ServiceManager $serviceManager)
+    private function __construct($version, $run, $next, ServiceManager $serviceManager = null)
     {
         $this->version = $version;
         $this->run = $run;
@@ -37,6 +42,19 @@ class Migration {
 
     public static function factory(array $migrationEntry)
     {
+        if (array_key_exists('current', $migrationEntry) && $migrationEntry['current']) {
+            $migration = new self(
+                $migrationEntry['version'],
+                null,
+                null,
+                null
+            );
+
+            $migration->setAsCurrent();
+
+            return $migration;
+        }
+
         return new self(
             $migrationEntry['version'],
             $migrationEntry['run'],
@@ -67,6 +85,19 @@ class Migration {
     public function getVersion()
     {
         return $this->version;
+    }
+
+    public function setAsCurrent()
+    {
+        $this->isCurrent = true;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCurrent()
+    {
+        return $this->isCurrent;
     }
 
     public function run()

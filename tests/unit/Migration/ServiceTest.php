@@ -13,6 +13,7 @@ class ServiceTest extends \PHPUnit_Framework_TestCase
 
     private $configMock;
     private $mapperMock;
+    private $eventsMock;
 
     protected function setUp()
     {
@@ -24,7 +25,11 @@ class ServiceTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->migrationService = new Service($this->configMock, $this->mapperMock);
+        $this->eventsMock = $this->getMockBuilder('Zend\EventManager\EventManagerInterface')
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->migrationService = new Service($this->configMock, $this->mapperMock, $this->eventsMock);
     }
 
     public function testRunMigrations()
@@ -36,6 +41,9 @@ class ServiceTest extends \PHPUnit_Framework_TestCase
         $this->configMock->expects($this->once())
             ->method('load')
             ->will($this->returnValue([]));
+
+        $this->eventsMock->expects($this->exactly(2))
+            ->method('trigger');
 
 
         $migration1Mock = Stub::make(

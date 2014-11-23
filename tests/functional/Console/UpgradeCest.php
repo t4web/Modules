@@ -4,13 +4,15 @@ namespace Modules\FunctionalTest\Console;
 use Zend\Mvc\Router\RouteMatch;
 use Zend\Console\Request as ConsoleRequest;
 use Modules\FunctionalTester;
-use Modules\Controller\Console\InstallController;
+use Modules\Controller\Console\UpgradeController;
+use Modules\Module\ModulesCollection;
+use Modules\Module\Module;
 use ComposerLockParser\ComposerInfo;
 use ComposerLockParser\PackagesCollection;
 use ComposerLockParser\Package;
 use Codeception\Util\Stub;
 
-class InstallCest
+class UpgradeCest
 {
     protected $event;
     protected $routeMatch;
@@ -24,21 +26,21 @@ class InstallCest
 
         $this->routeMatch = new RouteMatch(
             array(
-                'controller' => 'Modules\Controller\Console\Install',
+                'controller' => 'Modules\Controller\Console\Upgrade',
             )
         );
         $this->event->setRouteMatch($this->routeMatch);
     }
 
     // tests
-    public function tryInstallNotExistingModule(FunctionalTester $I)
+    public function tryUpgradeNotExistingModule(FunctionalTester $I)
     {
-        $I->wantTo("Check install not existing module");
+        $I->wantTo("Check upgrade not existing module");
 
         $this->routeMatch->setParam('action', 'run');
-        $this->routeMatch->setParam('moduleName', 'test/xmodule');
+        $this->routeMatch->setParam('moduleName', 'test/module');
 
-        $controller = new InstallController(
+        $controller = new UpgradeController(
             $this->application->getServiceManager()->get('Modules\Module\Service'),
             new ComposerInfo('composer.lock'),
             $this->application->getServiceManager()->get('Modules\Migration\Service'),
@@ -54,7 +56,7 @@ class InstallCest
                 array(
                     0 => 'public/index.php',
                     1 => 'modules',
-                    2 => 'install',
+                    2 => 'upgrade',
                 )
             )
         );
@@ -63,22 +65,24 @@ class InstallCest
         $response = $controller->getResponse();
 
         \PHPUnit_Framework_Assert::assertEquals(200, $response->getStatusCode());
-        \PHPUnit_Framework_Assert::assertEquals("Module test/xmodule not exists" . PHP_EOL, $result);
+        \PHPUnit_Framework_Assert::assertEquals("Module test/module not exists" . PHP_EOL, $result);
     }
 
-    public function tryInstallModule(FunctionalTester $I)
+    public function tryUpgradeModule(FunctionalTester $I)
     {
-        $I->wantTo("Check install module");
+        $I->wantTo("Check upgrade module");
 
         $this->routeMatch->setParam('action', 'run');
         $this->routeMatch->setParam('moduleName', 'test/module');
+
+        $this->initDB($I);
 
         $this->mockModuleManager($this->application->getServiceManager());
         $this->mockConfigService($this->application->getServiceManager());
 
         $composerInfoMock = $this->getComposerInfoStub();
 
-        $controller = new InstallController(
+        $controller = new UpgradeController(
             $this->application->getServiceManager()->get('Modules\Module\Service'),
             $composerInfoMock,
             $this->application->getServiceManager()->get('Modules\Migration\Service'),
@@ -94,7 +98,7 @@ class InstallCest
                 array(
                     0 => 'public/index.php',
                     1 => 'modules',
-                    2 => 'install',
+                    2 => 'upgrade',
                 )
             )
         );
@@ -103,7 +107,7 @@ class InstallCest
         $response = $controller->getResponse();
 
         \PHPUnit_Framework_Assert::assertEquals(200, $response->getStatusCode());
-        \PHPUnit_Framework_Assert::assertEquals("Installation test/module success completed" . PHP_EOL, $result);
+        \PHPUnit_Framework_Assert::assertEquals("Upgrade test/module success completed" . PHP_EOL, $result);
 
         /** @var Modules\Module\DbRepository $repository */
         $repository = $this->application->getServiceManager()->get('Modules\Module\DbRepository');
@@ -111,19 +115,19 @@ class InstallCest
         $module = $repository->find(['name' => 'test/module']);
 
         \PHPUnit_Framework_Assert::assertInstanceOf('Modules\Module\Module', $module);
-        \PHPUnit_Framework_Assert::assertEquals('test/module', $module->getName());
+        \PHPUnit_Framework_Assert::assertEquals('0.11.22', $module->getVersion());
     }
 
-    public function tryInstallInstalledModule(FunctionalTester $I)
+    public function tryUpgradeUpgradedModule(FunctionalTester $I)
     {
-        $I->wantTo("Check install already installed module");
+        $I->wantTo("Check upgrade already upgraded module");
 
         $this->routeMatch->setParam('action', 'run');
         $this->routeMatch->setParam('moduleName', 'test/module');
 
         $composerInfoMock = $this->getComposerInfoStub();
 
-        $controller = new InstallController(
+        $controller = new UpgradeController(
             $this->application->getServiceManager()->get('Modules\Module\Service'),
             $composerInfoMock,
             Stub::make('Modules\Migration\Service', ['run' => true]),
@@ -145,7 +149,7 @@ class InstallCest
                 array(
                     0 => 'public/index.php',
                     1 => 'modules',
-                    2 => 'install',
+                    2 => 'upgrade',
                 )
             )
         );
@@ -154,7 +158,7 @@ class InstallCest
         $response = $controller->getResponse();
 
         \PHPUnit_Framework_Assert::assertEquals(200, $response->getStatusCode());
-        \PHPUnit_Framework_Assert::assertEquals("Module test/module not need installation" . PHP_EOL, $result);
+        \PHPUnit_Framework_Assert::assertEquals("Module test/module not need upgrade" . PHP_EOL, $result);
     }
 
     private function mockModuleManager($serviceManager)
@@ -179,7 +183,7 @@ class InstallCest
             [
                 'exists' => true,
                 'load' => [
-                    'unknown' => [
+                    '0.11.21' => [
                         'run'  => 'SomeModule\Migrations\Migration_0_1_3',
                         'next' => '0.11.22'
                     ],
@@ -236,6 +240,18 @@ class InstallCest
     public function _failed(FunctionalTester $I, $fail)
     {
         $this->clearDB($I);
+    }
+
+    private function initDB(FunctionalTester $I)
+    {
+        $application = $I->getApplication();
+
+        /** @var Modules\Module\DbRepository $repository */
+        $repository = $application->getServiceManager()->get('Modules\Module\DbRepository');
+
+        $module = new Module('test/module', 'TestModule', '0.11.21');
+
+        $repository->add($module);
     }
 
     private function clearDB(FunctionalTester $I)

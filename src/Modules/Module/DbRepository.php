@@ -67,6 +67,16 @@ class DbRepository {
 
     /**
      * @param Module $module
+     */
+    public function update(Module $module)
+    {
+        $row = $this->mapper->toTableRow($module);
+
+        $this->tableGateway->update($row, ['name' => $module->getName()]);
+    }
+
+    /**
+     * @param Module $module
      *
      * @return integer
      */

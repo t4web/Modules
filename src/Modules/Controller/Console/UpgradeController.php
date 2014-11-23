@@ -8,7 +8,7 @@ use Modules\Module\Service as ModuleService;
 use Modules\Migration\Service as MigrationService;
 use Modules\Module\Service\StatusCalculator;
 
-class InstallController extends AbstractActionController {
+class UpgradeController extends AbstractActionController {
 
     /**
      * @var Service
@@ -59,17 +59,15 @@ class InstallController extends AbstractActionController {
 
         $module = $modules->getByName($moduleName);
 
-        if (!$module->isNeedInstallation()) {
-            return "Module $moduleName not need installation" . PHP_EOL;
+        if (!$module->isNeedUpgrade()) {
+            return "Module $moduleName not need upgrade" . PHP_EOL;
         }
-
-        $this->moduleService->install($module);
 
         $this->migrationService->getEvents()->attach($this->moduleService);
 
-        $this->migrationService->run($module, 'unknown');
+        $this->migrationService->run($module, $module->getVersion());
 
-        return "Installation $moduleName success completed" . PHP_EOL;
+        return "Upgrade $moduleName success completed" . PHP_EOL;
     }
 
 }

@@ -40,6 +40,17 @@ return array(
                             'action'     => 'run'
                         )
                     )
+                ),
+
+                'modules-upgrade' => array(
+                    'options' => array(
+                        'route'    => 'modules upgrade <moduleName>',
+                        'defaults' => array(
+                            '__NAMESPACE__' => 'Modules\Controller\Console',
+                            'controller' => 'Upgrade',
+                            'action'     => 'run'
+                        )
+                    )
                 )
             )
         )

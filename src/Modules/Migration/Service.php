@@ -2,9 +2,12 @@
 
 namespace Modules\Migration;
 
+use Zend\EventManager\EventManagerInterface;
 use Modules\Module\Module;
 
 class Service {
+
+    const MIGRATION_SUCCESS_COMPLETE = 'migration-success-complete';
 
     /**
      * @var Config
@@ -16,10 +19,24 @@ class Service {
      */
     private $mapper;
 
-    public function __construct(Config $configService, Mapper $mapper)
+    /**
+     * @var EventManagerInterface
+     */
+    private $events;
+
+    public function __construct(Config $configService, Mapper $mapper, EventManagerInterface $events)
     {
         $this->configService = $configService;
         $this->mapper = $mapper;
+        $this->events = $events;
+    }
+
+    /**
+     * @return EventCollection
+     */
+    public function getEvents()
+    {
+        return $this->events;
     }
 
     /**
@@ -38,7 +55,15 @@ class Service {
         $migration = $migrationsCollection->getFrom($fromVersion);
 
         while ($migration) {
+
+            if ($migration->isCurrent()) {
+                $this->getEvents()->trigger(self::MIGRATION_SUCCESS_COMPLETE, $migration, ['module' => $module]);
+                break;
+            }
+
             $migration->run();
+
+            $this->getEvents()->trigger(self::MIGRATION_SUCCESS_COMPLETE, $migration, ['module' => $module]);
 
             $migration = $migrationsCollection->getNext($migration);
         }

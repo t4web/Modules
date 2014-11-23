@@ -62,6 +62,14 @@ class Module {
     }
 
     /**
+     * @param integer $newVersion
+     */
+    public function setUpgradedTo($newVersion)
+    {
+        $this->version = $newVersion;
+    }
+
+    /**
      * @return boolean
      */
     public function isNeedInstallation()
