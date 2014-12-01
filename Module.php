@@ -136,7 +136,7 @@ class Module implements AutoloaderProviderInterface, ConfigProviderInterface, Co
                 'Modules\Controller\Console\Upgrade' => function (ControllerManager $cm) {
                     $sl = $cm->getServiceLocator();
 
-                    return new Controller\Console\InstallController(
+                    return new Controller\Console\UpgradeController(
                         $sl->get('Modules\Module\Service'),
                         new ComposerInfo('composer.lock'),
                         $sl->get('Modules\Migration\Service'),
