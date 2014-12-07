@@ -118,7 +118,6 @@ Statuses and actions matrix:
 `Y` -Yes
 `N` - No
 `X` - imposible state, throw exception
-`-` - in actions: nothing
 `R` - need remove
 
 No. | COM | DB | ZF | NV | UP | UPD DB | RUN MIG
@@ -126,7 +125,7 @@ No. | COM | DB | ZF | NV | UP | UPD DB | RUN MIG
 0 | + | + | + | + | + | Y | Y 
 1 | + | + | + | + | - | Y | N
 2 | + | + | + | - | + | X | X
-3 | + | + | + | - | - | - | -
+3 | + | + | + | - | - | N | N
 4 | + | + | - | + | + | R | N
 5 | + | + | - | + | - | R | N
 6 | + | + | - | - | + | R | N
@@ -143,7 +142,7 @@ No. | COM | DB | ZF | NV | UP | UPD DB | RUN MIG
 16 | - | + | + | + | + | Y | Y
 17 | - | + | + | + | - | Y | N
 18 | - | + | + | - | + | X | X
-19 | - | + | + | - | - | - | -
+19 | - | + | + | - | - | N | N
 20 | - | + | - | + | + | R | N
 21 | - | + | - | + | - | R | N
 22 | - | + | - | - | + | R | N
@@ -151,7 +150,7 @@ No. | COM | DB | ZF | NV | UP | UPD DB | RUN MIG
 24 | - | - | + | + | + | Y | Y
 25 | - | - | + | + | - | Y | N
 26 | - | - | + | - | + | X | X
-27 | - | - | + | - | - | Y | -
+27 | - | - | + | - | - | N | N
 28 | - | - | - | + | + | X | X
 29 | - | - | - | + | - | X | X
 30 | - | - | - | - | + | X | X
