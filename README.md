@@ -32,7 +32,7 @@ Add this project in your composer.json:
 
 ```json
 "require": {
-    "t4web/modules": "0.2.*"
+    "t4web/modules": "0.3.*"
 }
 ```
 
