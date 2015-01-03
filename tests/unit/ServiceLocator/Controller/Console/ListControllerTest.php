@@ -44,17 +44,7 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $moduleService = $this->getMockBuilder('Modules\Module\Service')
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $statusCalculator = $this->getMockBuilder('Modules\Module\Service\StatusCalculator')
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->serviceManager->setService('ModuleManager', $moduleManagerMock);
-        $this->serviceManager->setService('Modules\Module\Service', $moduleService);
-        $this->serviceManager->setService('Modules\Module\Service\StatusCalculator', $statusCalculator);
 
         $this->assertTrue($this->controllerManager->has('Modules\Controller\Console\List'));
 
@@ -62,6 +52,7 @@ class ListControllerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertInstanceOf('Modules\Controller\Console\ListController', $controller);
         $this->assertAttributeInstanceOf('ComposerLockParser\ComposerInfo', 'composerInfo', $controller);
+        $this->assertAttributeEquals($moduleManagerMock, 'moduleManager', $controller);
         $this->assertAttributeInstanceOf('Zend\View\Renderer\PhpRenderer', 'renderer', $controller);
         $this->assertAttributeInstanceOf('Modules\ViewModel\Console\ListViewModel', 'viewModel', $controller);
     }

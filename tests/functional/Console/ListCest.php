@@ -40,8 +40,7 @@ class ListCest
 
         $this->controller = new ListController(
             new ComposerInfo('composer.lock'),
-            $application->getServiceManager()->get('Modules\Module\Service'),
-            $application->getServiceManager()->get('Modules\Module\Service\StatusCalculator'),
+            $application->getServiceManager()->get('Zend\ModuleManager\ModuleManager'),
             $this->viewModel,
             $renderer
         );

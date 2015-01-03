@@ -3,20 +3,14 @@
 namespace Modules\Controller\Console;
 
 use Zend\Mvc\Controller\AbstractActionController;
-use Zend\ModuleManager\ModuleManagerInterface;
 use Zend\View\Renderer\PhpRenderer;
+use Zend\ModuleManager\ModuleManager;
 use ComposerLockParser\ComposerInfo;
 use Modules\ViewModel\Console\ListViewModel;
 use Modules\Module\Service as ModuleService;
-use Modules\Module\Service\StatusCalculator;
 
 class ListController extends AbstractActionController
 {
-
-    /**
-     * @var ModuleManagerInterface
-     */
-    private $moduleManager;
 
     /**
      * @var ComposerInfo
@@ -24,14 +18,9 @@ class ListController extends AbstractActionController
     private $composerInfo;
 
     /**
-     * @var ModuleService
+     * @var ModuleManager
      */
-    private $moduleService;
-
-    /**
-     * @var StatusCalculator
-     */
-    private $statusCalculator;
+    private $moduleManager;
 
     /**
      * @var ViewModel
@@ -45,14 +34,12 @@ class ListController extends AbstractActionController
 
     public function __construct(
         ComposerInfo $composerInfo,
-        ModuleService $moduleService,
-        StatusCalculator $statusCalculator,
+        ModuleManager $moduleManager,
         ListViewModel $viewModel,
         PhpRenderer $renderer)
     {
         $this->composerInfo = $composerInfo;
-        $this->moduleService = $moduleService;
-        $this->statusCalculator = $statusCalculator;
+        $this->moduleManager = $moduleManager;
         $this->viewModel = $viewModel;
         $this->renderer = $renderer;
     }
@@ -61,14 +48,11 @@ class ListController extends AbstractActionController
     {
         $this->composerInfo->parse();
 
-        $modules = $this->moduleService->getAll();
+        $loadedModules = $this->moduleManager->getLoadedModules();
         $packages = $this->composerInfo->getPackages();
 
-        $this->statusCalculator->calculate($modules, $packages);
-
         $this->viewModel->setPackages($packages);
-        $this->viewModel->setModules($modules);
-        $this->viewModel->setModuleService($this->moduleService);
+        $this->viewModel->setLoadedModules($loadedModules);
 
         $this->viewModel->setTemplate('list-show');
 

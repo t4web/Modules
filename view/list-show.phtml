@@ -6,7 +6,7 @@ $cli->bold('Used packages:');
 $cli->backgroundLightCyan(
     '  <black>'
     . sprintf("%-16s", 'Version')
-    . sprintf("%-20s", 'Namespace')
+    . sprintf("%-40s", 'Namespace')
     . sprintf("%-40s", 'Name')
     . "</black>"
 );
@@ -17,7 +17,7 @@ foreach($viewModel->getPackages() as $package) {
     $cli->out(
         '  '
         . sprintf("%-16s", $package->getVersion())
-        . sprintf("%-20s", $package->getNamespace())
+        . sprintf("%-40s", $package->getNamespace())
         . "<green>"
         . sprintf("%-40s", $package->getName())
         . "</green>"
@@ -34,64 +34,31 @@ $cli->bold('Used modules:');
 $cli->backgroundLightCyan(
     '  <black>'
     . sprintf("%-16s", 'Version')
-    . sprintf("%-14s", 'Status')
-    . sprintf("%-20s", 'Namespace')
+    . sprintf("%-40s", 'Namespace')
     . sprintf("%-40s", 'Name')
     . "</black>"
 );
 
-foreach ($viewModel->getModules() as $module) {
+foreach ($viewModel->getLoadedModules() as $moduleName => $module) {
 
-    if (in_array($module->getStatusName(), ['need install', 'need upgrade'])) {
-
+    if (isset($packages[$moduleName])) {
         $cli->out(
             '  '
-            . sprintf("%-16s", $module->getVersion())
-            . "<yellow>"
-            . sprintf("%-14s", $module->getStatusName())
-            . "</yellow>"
-            . sprintf("%-20s", $module->getNamespace())
+            . sprintf("%-16s", $packages[$moduleName]['version'])
+            . sprintf("%-40s", $moduleName)
             . "<green>"
-            . sprintf("%-40s", $module->getName())
+            . sprintf("%-40s", $packages[$moduleName]['name'])
             . "</green>"
         );
-
     } else {
         $cli->out(
             '  '
-            . sprintf("%-16s", $module->getVersion())
-            . sprintf("%-14s", $module->getStatusName())
-            . sprintf("%-20s", $module->getNamespace())
+            . sprintf("%-16s", '')
+            . sprintf("%-40s", $moduleName)
             . "<green>"
-            . sprintf("%-40s", $module->getName())
+            . sprintf("%-40s", $moduleName)
             . "</green>"
         );
     }
 
 }
-
-$cli->br();
-$cli->out('Statuses may be one of [<yellow>active</yellow>, <yellow>need install</yellow>, <yellow>need upgrade</yellow>, <yellow>absent</yellow>]');
-$cli->br();
-$cli->bold('Actions');
-$cli->out(
-    '  '
-    . "<green>"
-    . sprintf("%-40s", 'index.php modules install MODULENAME')
-    . "</green>"
-    . sprintf("%-40s", 'Install module in system and run initial migrations')
-);
-$cli->out(
-    '  '
-    . "<green>"
-    . sprintf("%-40s", 'index.php modules upgrade MODULENAME')
-    . "</green>"
-    . sprintf("%-40s", 'Upgrade module and run module migrations')
-);
-$cli->out(
-    '  '
-    . "<green>"
-    . sprintf("%-40s", 'index.php modules remove MODULENAME')
-    . "</green>"
-    . sprintf("%-40s", 'Remove module and run remove migrations')
-);

@@ -42,35 +42,19 @@ class ListViewModel extends ViewModel {
     }
 
     /**
-     * @param ModulesCollection $modules
+     * @param array $modules
      */
-    public function setModules(ModulesCollection $modules)
+    public function setLoadedModules(array $modules)
     {
         $this->modules = $modules;
     }
 
     /**
-     * @return ModulesCollection
+     * @return array
      */
-    public function getModules()
+    public function getLoadedModules()
     {
         return $this->modules;
     }
 
-    /**
-     * @return ModuleService
-     */
-    public function getModuleService()
-    {
-        return $this->moduleService;
-    }
-
-    /**
-     * @param ModuleService $moduleService
-     */
-    public function setModuleService($moduleService)
-    {
-        $this->moduleService = $moduleService;
-    }
-
-} 
+}
