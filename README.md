@@ -64,7 +64,7 @@ For list modules run
 $ php public/index.php modules list
 ```
 result will be like this:
-<p align="center"><img src="http://t4web.com.ua/var/module-list-example-0.2.6.png" width="850" alt="module list example" /></p>
+<p align="center"><img src="http://t4web.com.ua/var/module-list-example-0.3.0.png" width="894" alt="module list example" /></p>
 
 Statuses and actions matrix:
 `+` - exists/have
