@@ -11,16 +11,6 @@ return array(
     'console' => array(
         'router' => array(
             'routes' => array(
-                'modules-init' => array(
-                    'options' => array(
-                        'route'    => 'modules init',
-                        'defaults' => array(
-                            '__NAMESPACE__' => 'Modules\Controller\Console',
-                            'controller' => 'Init',
-                            'action'     => 'run'
-                        )
-                    )
-                ),
                 'modules-list' => array(
                     'options' => array(
                         'route'    => 'modules list',
@@ -31,27 +21,6 @@ return array(
                         )
                     )
                 ),
-                'modules-install' => array(
-                    'options' => array(
-                        'route'    => 'modules install <moduleName>',
-                        'defaults' => array(
-                            '__NAMESPACE__' => 'Modules\Controller\Console',
-                            'controller' => 'Install',
-                            'action'     => 'run'
-                        )
-                    )
-                ),
-
-                'modules-upgrade' => array(
-                    'options' => array(
-                        'route'    => 'modules upgrade <moduleName>',
-                        'defaults' => array(
-                            '__NAMESPACE__' => 'Modules\Controller\Console',
-                            'controller' => 'Upgrade',
-                            'action'     => 'run'
-                        )
-                    )
-                )
             )
         )
     ),
