@@ -1,6 +1,6 @@
 {
     "name": "t4web/modules",
-    "description": "Module for managing ZF2 module migrations.",
+    "description": "ZF2 Module for list used/installed modules.",
     "type": "library",
     "license": "BSD-3-Clause",
     "keywords": [
